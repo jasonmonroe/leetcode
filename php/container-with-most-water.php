@@ -112,11 +112,6 @@ class Solution {
             );
     }
 
-    public function chkHeightValRange2(int $heightVal) : bool
-    {
-        return $heightVal < 1 || $heightVal > pow(10, 4);
-    }
-
     /**
      * @param int $n
      * @param array $height
