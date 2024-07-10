@@ -223,15 +223,16 @@ class FindUnusedTranslations extends Command
 
     protected function showBanner(string $message): void
     {
-        $this->info('# '.$message.' Program # - ' . localDatetime(Carbon::now()->format('Y-m-d H:i:s')));
+        $this->info('# '.$message.' Program # - ' . $this->localDatetime(Carbon::now()->format('Y-m-d H:i:s')));
     }
     
     /**
      * Converts integer seconds into a readable string.
+     *
      * @param int seconds
      * @return string
      */
-    protected function formatDuration(int seconds) : string
+    protected function formatDuration(int $seconds) : string
     {
         $hr = 0;
         $min = 0;
@@ -255,5 +256,37 @@ class FindUnusedTranslations extends Command
         $hr = $hr > 0 ? $hr . 'h ' : '';
     
         return $hr . $min . 'm ' . $sec . 's';
+    }
+
+    /**
+     * Converts datetime to UTC to local time.
+     *
+     * @param $datetime
+     * @param string $format
+     * @param string|null $timezone
+     * @return string
+     */
+    protected function localDatetime($datetime = null, string $format = 'LLL', string $timezone = null): string
+    {
+        if (!$datetime instanceof Carbon) {
+            if ($datetime === null) {
+                $datetime = Carbon::now();
+            } else {
+                $datetime = Carbon::parse($datetime);
+            }
+        }
+
+        $timezone = $timezone ?? config('site.dates_timezone');
+        $datetime->setTimezone($timezone);
+
+        // If datetime format type ISO starts w/ an L output it w/ the isoFormat() method, otherwise output in the literal
+        // PHP date format.
+        $carbonIsoFormats = array_keys(Carbon::now()->getIsoFormats(config('app.locale')));
+
+        if (in_array($format, $carbonIsoFormats)) {
+            return $datetime->isoFormat($format);
+        } else {
+            return $datetime->format($format);
+        }
     }
 }
