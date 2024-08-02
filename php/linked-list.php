@@ -56,7 +56,7 @@ class Solution {
     function mergeKLists($lists): ?ListNode
     {
         if (!$this->chkConstraints($lists)) {
-            return;
+            return null;
         }
 
         $vals = $this->getOrderedValues($lists);
