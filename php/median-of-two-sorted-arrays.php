@@ -101,6 +101,7 @@ $randNo = mt_rand(2, 20);
 for ($i = 0; $i < $randNo; $i++) {
     $nums1[$i] = mt_rand(1, 50);
 }
+
 $nums1 = array_unique($nums1);
 ksort($nums1);
 
@@ -110,6 +111,7 @@ $randNo = mt_rand(1, 20);
 for ($i = 0; $i < $randNo; $i++) {
     $nums2[$i] = mt_rand(1, 50);
 }
+
 $nums2 = array_unique($nums2);
 ksort($nums2);
 
