@@ -50,12 +50,7 @@ function countingSort(array $arr): array
 
 function initArrayValueCnts(int $cnt) : array
 {
-    $arrValCnts = [];
-    for ($i=0; $i<$cnt; $i++) {
-        $arrValCnts[$i] = 0;
-    }
-
-    return $arrValCnts;
+    return array_fill(0, $cnt - 0, 0);
 }
 
 // Start here...

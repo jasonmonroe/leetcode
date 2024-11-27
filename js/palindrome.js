@@ -31,8 +31,8 @@
  * @param {number} x
  * @return {boolean}
  */
-var isPalindrome = function(x) {
-    str = x.toString()
+let isPalindrome = function(x) {
+    let str = x.toString()
     const orig = str;
     let rev = '';
 
