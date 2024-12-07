@@ -120,14 +120,14 @@ class Solution {
     public function calcHeightCntGt20000(int $n, array $height): float|int
     {
         $maxArea = 0;
-        for ($i = $n/2; $i > 0; $i--) {
-            for ($j = 0; $j< $n/2; $j++) {
+        for ($i = $n / 2; $i > 0; $i--) {
+            for ($j = 0; $j< $n / 2; $j++) {
                 if ($this->chkHeightValRange($height, $i, $j)) {
                     continue;
                 }
+
                 $newMaxArea = $this->getMaxArea($this->calcArea($height, $i, $j), $maxArea);
                 if ($newMaxArea === $maxArea) {
-
                     return $newMaxArea * 2;
                 } else {
                     $maxArea = $newMaxArea;
