@@ -3,6 +3,8 @@
 # Random Pick Index
 #--------------------------------------------------------------------------
 # #398
+# @link https://leetcode.com/problems/random-pick-index/submissions/1478187374/
+#
 # Given an integer array nums with possible duplicates, randomly output the
 # index of a given target number. You can assume that the given target number
 # must exist in the array.
@@ -14,7 +16,6 @@
 # If there are multiple valid i's, then each index should have an equal
 # probability of returning.
 #
-# @link https://leetcode.com/problems/random-pick-index/submissions/1478187374/
 #
 ###
 import random

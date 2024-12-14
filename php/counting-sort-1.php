@@ -2,9 +2,10 @@
 
 /*
 |--------------------------------------------------------------------------
-| Counting Sort #1
+| Counting Sort
 |--------------------------------------------------------------------------
 | HankerRank
+| #1
 | @link https://www.hackerrank.com/challenges/one-month-preparation-kit-countingsort1/copy-from/384024965
 |
 | Complete the 'countingSort' function below.

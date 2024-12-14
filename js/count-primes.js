@@ -3,6 +3,8 @@
 | Count Primes
 |--------------------------------------------------------------------------
 | #204
+| @link https://leetcode.com/problems/count-primes/submissions/1478762537/
+|
 | Given an integer n, return the number of prime numbers that are strictly less than n.
 |
 | Example 1:
@@ -19,7 +21,7 @@
 | Input: n = 1
 | Output: 0
 |
-| @link https://leetcode.com/problems/count-primes/submissions/1478762537/
+|
 */
 
 /**

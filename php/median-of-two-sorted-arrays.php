@@ -26,7 +26,7 @@ class Solution {
         $o = $m + $n;
 
         // Set constraints.
-        if ($m < 0 || $m > 1000 || $n < 0 || $n > 1000 || ($o < 0 || $o > 2000)) {
+        if ($m <= 0 || $m > 1000 || $n < 0 || $n > 1000 || ($o < 0 || $o > 2000)) {
             return 0;
         }
 
