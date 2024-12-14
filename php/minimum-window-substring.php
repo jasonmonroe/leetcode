@@ -23,7 +23,7 @@ class Solution {
      */
     public function minWindow(string $s, string $t) : string
     {
-        // hastack len, needle lens
+        // Haystack len, needle lens.
         $haystack = '';
         $m = strlen($s);
         $n = strlen($t);
