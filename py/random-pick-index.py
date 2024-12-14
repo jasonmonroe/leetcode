@@ -49,17 +49,17 @@ class Solution:
         return index
 
     def get_target_index(self, target):
-        indexes = []
+        indices = []
         for i in range (0, self.length):
             if target == self.nums[i]:
-                indexes.append(i)
+                indices.append(i)
 
-        return indexes[random.randint(0, len(indexes) - 1)]
+        return indices[random.randint(0, len(indices) - 1)]
 
     def rno(self):
         return random.randint(0, self.length - 1)
 
-    # Special case for 20,000+ indexes.  Count indexes that are NOT target.
+    # Special case for 20,000+ indices.  Count indices that are NOT target.
     def get_random_index(self, target):
         # There are approx. 100 index values out of 20,000 that are not a match.
         rand_no = self.rno()
