@@ -16,7 +16,6 @@
 # If there are multiple valid i's, then each index should have an equal
 # probability of returning.
 #
-#
 ###
 import random
 
