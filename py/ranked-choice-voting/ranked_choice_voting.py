@@ -4,7 +4,7 @@
 |--------------------------------------------------------------------------
 | Jason Monroe
 | jason@jasonmonroe.com
-| ranked-choice-voting.py
+| ranked_choice_voting.py
 |
 | January 19, 2025
 |--------------------------------------------------------------------------
@@ -20,6 +20,26 @@
 | The systems are: Point Score, Remaining Candidates, Next Choice, Redistribution,
 | Average-Weighted Systems
 """
+
+# Import Libraries
+import random
+import uuid
+from datetime import date
+
+import helpers
+from helpers import uid
+
+import next_choice_system
+import point_score_system
+import redistribution_system
+import rem_candidates_system
+
+
+# Parent class of all voting systems
+class VotingSystem:
+    pass
+
+
 
 """
 |--------------------------------------------------------------------------
@@ -69,6 +89,7 @@
 | Note: No candidates are eliminated until the final round.
 """
 
+
 """
 |--------------------------------------------------------------------------
 | Redistribution System
@@ -79,10 +100,40 @@
 | a candidate receives more than half of the votes do determine the winner.
 """
 
+
+
 """
 |--------------------------------------------------------------------------
 | Average-Weighted Systems
 |--------------------------------------------------------------------------
 | Take the number of points of each candidate for each voting system and weigh
-| them equally to determine an overall winner by averaging the points.
+| them to determine an overall winner. 
+|
+| Voting System Weights:
+|   Remaining Candidates: 34%
+|   Next Choice: 22%
+|   Redistribution: 22%
+|   Point Score: 22%
 """
+class AverageWeightystem:
+    pass
+
+### Run Program
+benchmark_id = uid(6)
+print(f'\nStart Benchmark ID: {benchmark_id}')
+
+elect = Election()
+
+# Tally Point Score System
+
+# Tally Remaining Candidates System
+
+# Tally Next Choice System
+
+# Tally Redistribution System
+
+# Tally Average-Weighted Systems
+
+# Show Results
+
+### End of Program
