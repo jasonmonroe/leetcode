@@ -12,7 +12,7 @@
 | gets at least half of the votes in round one, they win.  If this doesn't happen, it's
 | continued to next round and the candidate with the least nth choice votes is eliminated.
 | Count the voter's next remaining candidate choice instead of their choice for the
-| eliminated candidate (meaning they still have a say in who wins).
+| eliminated candidate (meaning they still have a say in whom wins).
 |
 | Repeat these steps in rounds until there are only two candidates and now whomever
 | has the most votes is determined the winner.
@@ -21,7 +21,65 @@
 | @link https://www.youtube.com/watch?v=lLU3lbrxMBI
 | @link https://www.youtube.com/watch?v=oHRPMJmzBBw
 """
-class RemainingCandidatesSystem:
-    def __init__(self):
-        # TODO document why this method is empty
-        pass
+
+from helpers import MAX_CHOICES, NO_VOTE_VAL, FIRST_CHOICE_INDEX, map_id_to_candidate_index, sort_candidates, place_str
+from voting_system import VotingSystem
+
+class RemainingCandidatesSystem(VotingSystem):
+    def __init__(self, candidates, ballots):
+        super().__init__(candidates, ballots)
+        self.title = 'Remaining Candidates'
+        #self.voter_cnt = len(ballots)
+
+
+    def recount_ballots(self, round_num):
+        """
+        Count all first place votes to determine winner.
+        If no majority, count every voter's next choice votes and add to the total.
+        Calculate the majority vote with total ballots * choice value.
+        Example: Second round
+        voter_cnt = len(self.ballots)
+
+        :parameter round_num: The current round number.
+        """
+
+        # Reset total points for each candidate so we can count the first choice each round.
+        self.reset_candidate_totals()
+
+        for i in range(0, self.voter_cnt):
+            ballot = self.ballots[i]
+
+            # Note: since we're removing the loser from the ballot, we only need to count the top row.
+            voted_id = ballot[FIRST_CHOICE_INDEX]
+
+            if voted_id != NO_VOTE_VAL:
+                index = map_id_to_candidate_index(voted_id, self.candidates)
+                self.candidates[index].total += 1
+                print('Round:', round_num, 'Voted ID:', voted_id, 'Total:', self.candidates[index].total)
+            else:
+                print(f'Voter {i} did not vote for {place_str(0, "p")}.')
+
+    """
+    """
+    def score_ballots(self):
+        round_num = 1
+        self.recount_ballots(round_num)
+
+        while self.determine_winner(round_num) != True and round_num <= MAX_CHOICES:
+
+            # After tallying "new" totals, if there is still no majority, get the least voted candidate.
+            loser = self.determine_loser()
+
+            # Remove loser from candidate pool and from all ballots.
+            loser_index = self.candidates.index(loser)
+            #print('Loser Index:', loser_index)
+            self.candidates[loser_index].is_winner = False
+
+            # Remove the loser candidate from all the ballots so they are not counted in the next round.
+            self.remove_loser_from_ballot(loser)
+
+            round_num += 1
+            self.recount_ballots(round_num)
+
+        # Order candidates by points descending
+        self.candidates = sort_candidates(self.candidates)

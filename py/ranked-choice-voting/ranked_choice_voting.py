@@ -18,27 +18,20 @@
 | This is a script to run multiple elections to determine a winner by a ranked
 | choice.
 | The systems are: Point Score, Remaining Candidates, Next Choice, Redistribution,
-| Average-Weighted Systems
+| Voted-Weighted Systems
 """
 
 # Import Libraries
-import random
-import uuid
-from datetime import date
+import copy
+# from datetime import date
 
-import helpers
 from helpers import uid
+from election import Election
 
-import next_choice_system
-import point_score_system
-import redistribution_system
-import rem_candidates_system
-
-
-# Parent class of all voting systems
-class VotingSystem:
-    pass
-
+from next_choice_system import NextChoiceSystem
+from weighted_score_system import WeightedScoreSystem
+from redistribution_system import RedistributionSystem
+from rem_candidates_system import RemainingCandidatesSystem
 
 
 """
@@ -104,36 +97,76 @@ class VotingSystem:
 
 """
 |--------------------------------------------------------------------------
-| Average-Weighted Systems
+| All Voting Weighted System
 |--------------------------------------------------------------------------
 | Take the number of points of each candidate for each voting system and weigh
 | them to determine an overall winner. 
 |
 | Voting System Weights:
-|   Remaining Candidates: 34%
-|   Next Choice: 22%
-|   Redistribution: 22%
-|   Point Score: 22%
+|   - Weighted (Point) Score: 22%
+|   - Remaining Candidates: 34%
+|   - Next Choice: 22%
+|   - Redistribution: 22%
 """
-class AverageWeightystem:
+class AllVotingWeightedSystem:
     pass
 
 ### Run Program
 benchmark_id = uid(6)
-print(f'\nStart Benchmark ID: {benchmark_id}')
+print(f'\n* Start Benchmark ID: {benchmark_id} *')
 
+# Create and run election
 elect = Election()
+elect.election_day()
 
-# Tally Point Score System
+# Make copies of the candidates and ballots for each system. This is to ensure the original data is not modified.
+ballots = elect.ballots.copy()
+candidates = elect.candidates.copy()
 
+"""
+# Tally Weighted Score System
+#print('\n\n- WEIGHTED SCORE SYSTEM -')
+weight_candidates = candidates.copy()
+weight = WeightedScoreSystem(weight_candidates, ballots.copy())
+print(f'- {weight.title.upper()} VOTING SYSTEM -')
+weight.score_ballots()
+weight.determine_winner()
+"""
+
+"""
 # Tally Remaining Candidates System
+#print('\n\n- REMAINING CANDIDATES SYSTEM -')
+rem_candidates = candidates.copy()
+rem = RemainingCandidatesSystem(rem_candidates, ballots.copy())
+print(f'- {rem.title.upper()} VOTING SYSTEM -')
+rem.score_ballots()
+"""
+
 
 # Tally Next Choice System
+next_choice_candidates = candidates.copy()
+next_choice = NextChoiceSystem(next_choice_candidates, ballots.copy())
+print(f'- {next_choice.title.upper()} VOTING SYSTEM -')
+next_choice.score_ballots()
+#next_choice.determine_winner()
 
+
+"""
 # Tally Redistribution System
+redistribution_candidates = candidates.copy()
+redistribution = RedistributionSystem(redistribution_candidates, ballots.copy())
+print(f'\n- {redistribution.title.upper()} VOTING SYSTEM -')
+redistribution.score_ballots()
+"""
 
+
+"""
 # Tally Average-Weighted Systems
+print('- AVERAGE WEIGHTED SYSTEM -')
+"""
+
 
 # Show Results
+print(f'\n* End Benchmark ID: {benchmark_id} *')
 
 ### End of Program

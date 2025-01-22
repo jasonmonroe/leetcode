@@ -1,5 +1,8 @@
 # Election Class
-import helpers
+import random
+from helpers import uid, ridx, place_str, map_id_to_candidate_index, MIN_CANDIDATES, MAX_CANDIDATES, Candidate, \
+    MIN_VOTERS, MAX_VOTERS, MAX_CHOICES, PERCENTILE, NO_VOTE_PCT_THRESHOLD, NO_VOTE_VAL, show_output
+from datetime import date
 
 class Election:
     def __init__(self):
@@ -7,17 +10,38 @@ class Election:
         self.candidates = []
         self.pool = []  # pool of candidates to vote on
 
+
+    def election_day(self):
+        """
+        Run the election.
+        """
+
+        self.register()
+        self.vote()
+        self.show_banner()
+        self.tally()
+
     def show_banner(self):
-        print('\n##########################')
-        print('# E L E C T I O N  D A Y #')
-        print('##########################')
-        print('#', date.today().strftime("%B %d, %Y"))
-        print('# Candidates:', len(self.candidates))
-        print('# Voters:', len(self.ballots))
-        print('##########################\n')
+        """
+        Display the election banner.
+        :return:
+        """
+
+        print('\n----------------------------')
+        print('-- E L E C T I O N  D A Y --')
+        print('----------------------------')
+        print('-', date.today().strftime("%B %d, %Y"))
+        print('- Candidates:', len(self.candidates))
+        print('- Voters:', len(self.ballots))
+        print('----------------------------')
 
     @staticmethod
     def get_parties():
+        """
+        List of political parties.
+        :return: list: A list of political parties.
+        """
+
         return [
             'Constitution',
             'Democrat',
@@ -31,13 +55,19 @@ class Election:
 
     @staticmethod
     def get_names():
+        """
+        Get a list of first and last names for candidates.
+
+        :return: object: A dictionary of first and last names.
+        """
+
         return {
             'first': [
                 'Alexander',
                 'Aïsha',
                 'Amelia',
                 'Anaïs',
-                'Ananya',
+                'Aries',
                 'Ava',
                 'Benjamin',
                 'Charlotte',
@@ -69,7 +99,7 @@ class Election:
                 'Scarlett',
                 'Sophia',
                 'Sofia',
-                'Thiago',
+                'Thaddeus',
                 'William',
                 'Yuki',
                 'Zhang'
@@ -98,8 +128,8 @@ class Election:
                 'Lewis',
                 'Lopez',
                 'Martin',
-                'Martin',
                 'Martinez',
+                'Miller',
                 'Moore',
                 'Ramírez',
                 'Ramirez',
@@ -119,13 +149,23 @@ class Election:
                 'Wright',
                 'Young',
                 'Zhang',
-                'Petrova'
+                'Zimmerman'
             ]
         }
 
     # Validate input.  We only accept integers or blank space that will generate a random value.
     @staticmethod
     def validate_input (message, str_flag=False):
+        """
+        Only accept integers or blank space that will generate a random value.
+
+        :param string message: Message to display to the user.
+        :param bool str_flag: Is the input a string or not?
+
+        :returns: None
+
+        :raises: ValueError: If the input is not an integer or string.
+        """
         while True:
             user_input = input(message)
 
@@ -140,81 +180,92 @@ class Election:
             except ValueError:
                 print('Invalid input. Please enter an integer or press enter for a random value to be used.')
 
-    # @todo temp method
-    def register_auto (self):
-        candidate_cnt = 4
-        self.declare_candidacy(candidate_cnt)
-
-    # Secretary of State registers declared candidates for the primary election.
     def register (self):
-        min_candidates = 1
-        max_candidates = 32
+        """
+        Secretary of State registers candidates for the election.
 
-        global show_output
-        show_output = False
+        :return: None
+        """
+
         if self.validate_input('\nShow output? (y/n) ', True) == 'y':
+            global show_output
             show_output = True
 
-        candidate_cnt = self.validate_input(f'How many candidates ({min_candidates} to {max_candidates}) will register for the primary? ')
+        candidate_cnt = self.validate_input(f'How many candidates ({MIN_CANDIDATES} to {MAX_CANDIDATES}) will register for the election?')
 
         if candidate_cnt == '':
-            candidate_cnt = random.randint(min_candidates, max_candidates)
+            candidate_cnt = 4 #random.randint(MIN_CANDIDATES, MAX_CANDIDATES)
 
         else:
             # Set candidate count within range.
-            if candidate_cnt < min_candidates:
-                candidate_cnt = min_candidates
+            if candidate_cnt < MIN_CANDIDATES:
+                candidate_cnt = MIN_CANDIDATES
 
-            if candidate_cnt > max_candidates:
-                candidate_cnt = max_candidates
+            if candidate_cnt > MAX_CANDIDATES:
+                candidate_cnt = MAX_CANDIDATES
 
-        print(f'There are {candidate_cnt} candidates for this primary election.')
+        print(f'There are {candidate_cnt} candidates for this election.')
 
         # Register candidates
         self.declare_candidacy(candidate_cnt)
 
-    # Declare candidacy by registering name party for the primary
+    # Declare candidacy by registering name and party affiliation for the election.
     def declare_candidacy (self, candidate_cnt):
+        """
+        Register candidates for the election.
+
+        :param candidate_cnt: Number of candidates that are registered.
+
+        :return: None
+        """
+
         full_names = Election.get_names()
 
-        print('\nCandidates')
-        for i in range(0, candidate_cnt) :
+        print('\n------------------')
+        print('--- Candidates ---')
+        print('------------------')
+
+        # Make sure each uid is unique
+        for _ in range(0, candidate_cnt) :
+            uid_str = uid()
             party = random.choice(Election.get_parties())
             full_name = random.choice(full_names['first']) + ' ' + random.choice(full_names['last'])
-            print(f'{i}, {full_name}, {party}')
+            print(f'{uid_str} - {full_name} - {party}')
 
-            # Make sure each uid is unique
-            self.candidates.append(Candidate(uid(), full_name, party))
+            self.candidates.append(Candidate(uid_str, full_name, party))
+
+        print('-------------------------------------')
 
     # Get the number of voters who registered for this election
     def get_voter_cnt(self):
-        min_voters = 25
-        max_voters = 168000000  # 168,000,000
-        voter_cnt = self.validate_input('\nHow many voters are there? ')
+        voter_cnt = self.validate_input('\nHow many voters are there?')
 
         if voter_cnt == '':
-            voter_cnt = random.randint(min_voters, 100)  # should be max_voters
+            voter_cnt = random.randint(MIN_VOTERS, MAX_VOTERS)  # should be MAX_VOTERS
         else:
-            if voter_cnt < min_voters:
-                voter_cnt = min_voters
+            if voter_cnt < MIN_VOTERS:
+                voter_cnt = MIN_VOTERS
 
-            elif voter_cnt > max_voters:
-                voter_cnt = max_voters
+            elif voter_cnt > MAX_VOTERS:
+                voter_cnt = MAX_VOTERS
 
-        print(f'{voter_cnt} voters will vote in this primary election.')
+        print(f'{voter_cnt} voters will vote in this election.')
 
         return voter_cnt
 
-    # Vote in the election.
     def vote (self):
+        """
+        Vote in the election.
+        Gets the number of voters and allows them to vote for candidates.
+        """
+
         # Prompt for voters
         voter_cnt = self.get_voter_cnt()
-        #voter_cnt = 10  # For testing purposes
 
         # Create a ballot for voters to vote on.
-        choice_cnt = min(max_choices, len(self.candidates))
+        choice_cnt = min(MAX_CHOICES, len(self.candidates))
 
-        print('\nVoting...')
+        print('\n--- Voting ---')
         for i in range (0, voter_cnt):
             self.reset_pool()
             self.ballots.append([])
@@ -232,40 +283,47 @@ class Election:
                     print(f'Voter {i} voted {p_str} for Candidate ID: {candidate_chosen}')
 
             # Display ballot for voter
-            print(f'Voter {i} ballot: {self.ballots[i]}')
+            print(f'Voter {i} - Ballot: {self.ballots[i]}')
 
-    # Mark candidate on ballot.
     def mark_candidate (self):
+        """
+        Mark a candidate on the ballot.
+        There is a small chance that a voter does not want to vote for a candidate at all.
+        """
 
-        # There's a small chance that a voter does not want to vote for a candidate at all.
-        no_vote_pct_threshold = 3
-        no_vote_odds = random.randint(0, percentile)
+        no_vote_odds = random.randint(0, PERCENTILE)
 
         # The odds are 10% that a voter does not choose a candidate otherwise vote
-        if no_vote_odds <= no_vote_pct_threshold:
-            return no_vote_val
-
-        else:
+        if no_vote_odds >= NO_VOTE_PCT_THRESHOLD:
             return self.choose_candidate()
 
-    # Choose a candidate that has not been chosen before.
-    # Note: We can expand this with more thorough logic in choosing a candidate.  For now just pick at random.
+        else:
+            return NO_VOTE_VAL
+
     def choose_candidate (self):
+        """
+        Chooses a candidate that has yet to be chosen.
+        Note: We can expand this with more thorough logic in choosing a candidate.  For now, just pick at random.
+
+        returns:
+           int: The candidate id chosen.
+        """
+
         return self.pool.pop(ridx(self.pool))
 
-    # Reset the pool of candidates for new voters to vote on.
-    # Note: Pool should not exceed the number of candidates.
     def reset_pool (self):
+        """
+        Reset the pool of candidates for new voters to vote on.
+        """
+
         self.pool = []
         for i in range (len(self.candidates)):
             self.pool.append(self.candidates[i].id)
 
-    # Tally votes and store based on voter choice.
-    def tally (self):
-        print('\nTallying votes...')
-        if show_output == 'y':
-            print('\nTallying votes...')
-            print(self.ballots)
+    def tally(self):
+        """
+        Tally votes for each candidate based on the voter's choice.
+        """
 
         for i in range (0, len(self.ballots)):
             for vote_choice in range (0, len(self.ballots[i])):
@@ -274,8 +332,8 @@ class Election:
                 if show_output is True:
                     print(f'Ballot {i} choice {vote_choice} for candidate {voted_id}')
 
-                if voted_id != no_vote_val:
-                    # Update the corresponding place attribute based on vote_choice
+                # Update the corresponding place attribute based on vote_choice.
+                if voted_id != NO_VOTE_VAL:
                     index = map_id_to_candidate_index(voted_id, self.candidates)
                     self.candidates[index].votes[vote_choice] += 1
 
@@ -284,8 +342,8 @@ class Election:
                         p_str = place_str(vote_choice, 'p')
                         print(f'Warning: Voter {i} did not vote for {p_str}.')
 
-        print('Votes tallied.')
+        print('\n------- BALLOT TALLIES -------')
+        for i in range (0, len(self.candidates)):
+            print(f' Candidate {self.candidates[i].id} ', self.candidates[i].votes)
 
-        if show_output is True:
-            for i in range (0, len(self.candidates)):
-                print(f'Candidate {self.candidates[i].id} Total:{self.candidates[i].total} Votes:', self.candidates[i].votes)
+        print('------------------------------')

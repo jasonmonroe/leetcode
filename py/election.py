@@ -453,7 +453,7 @@ class VotingSystem:
 
         # Get the candidate with the fewest votes.
         pool_of_candidates = self.get_pool_of_candidates()
-
+        global show_output
         if show_output is True:
             print('Pool of candidates left:', len(pool_of_candidates))
 
