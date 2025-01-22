@@ -17,6 +17,7 @@ from voting_system import VotingSystem
 class WeightedScoreSystem(VotingSystem):
     def __init__(self, candidates, ballots):
         super().__init__(candidates, ballots) # constructor of parent class
+        self.title = 'Weighted Score'
 
     """
     Score candidate points based on votes ranked by choice.

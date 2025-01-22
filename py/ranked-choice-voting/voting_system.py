@@ -21,11 +21,8 @@ class VotingSystem:
         self.candidates = candidates
         self.ballots = ballots
         self.winner_id = None
-        #self.extra_votes = 0 # Extra votes to add to the majority vote.
         self.voter_cnt = len(ballots)
         self.majority = round(self.voter_cnt / 2)
-
-        #print('__init__ Majority:', self.majority)
 
         # Define weighted choice values for each place.
         self.choice_vals = [
@@ -46,7 +43,7 @@ class VotingSystem:
 
         # Get the candidate with the fewest votes.
         pool_of_candidates = self.get_pool_of_candidates()
-        #print('Pool of candidates left:', len(pool_of_candidates))
+
         if show_output is True:
             print('Pool of candidates left:', len(pool_of_candidates))
 

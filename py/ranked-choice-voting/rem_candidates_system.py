@@ -29,8 +29,6 @@ class RemainingCandidatesSystem(VotingSystem):
     def __init__(self, candidates, ballots):
         super().__init__(candidates, ballots)
         self.title = 'Remaining Candidates'
-        #self.voter_cnt = len(ballots)
-
 
     def recount_ballots(self, round_num):
         """
@@ -59,9 +57,13 @@ class RemainingCandidatesSystem(VotingSystem):
             else:
                 print(f'Voter {i} did not vote for {place_str(0, "p")}.')
 
-    """
-    """
+
     def score_ballots(self):
+        """
+        Score the ballots for each candidate.
+        This is the first step in the remaining candidates' system.
+        """
+
         round_num = 1
         self.recount_ballots(round_num)
 
@@ -72,7 +74,6 @@ class RemainingCandidatesSystem(VotingSystem):
 
             # Remove loser from candidate pool and from all ballots.
             loser_index = self.candidates.index(loser)
-            #print('Loser Index:', loser_index)
             self.candidates[loser_index].is_winner = False
 
             # Remove the loser candidate from all the ballots so they are not counted in the next round.
