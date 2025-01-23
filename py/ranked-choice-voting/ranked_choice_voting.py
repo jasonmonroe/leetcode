@@ -17,7 +17,7 @@
 |
 | This is a script to run multiple elections to determine a winner by a ranked
 | choice.
-| The systems are: Point Score, Remaining Candidates, Next Choice, Redistribution,
+| The systems are: Point Score, Remaining Candidates, Redistribution,
 | Voted-Weighted Systems
 """
 
@@ -44,7 +44,7 @@ elect.election_day()
 ballots = elect.ballots.copy()
 candidates = elect.candidates.copy()
 
-"""
+
 # Popular Vote System
 popular_candidates = candidates.copy()
 popular = PopularVoteSystem(popular_candidates, ballots.copy())
@@ -60,38 +60,22 @@ weight.score_ballots()
 weight_candidates = weight.determine_winner_by_popular()
 elect.show_results()
 elect.save_results(weight.title, weight_candidates)
-"""
 
-"""
-print('line 84')
-for result in elect.results:
-    print(result['title'])
-    print('line 89')
-    for candidate in result['candidates']:
-        print(vars(candidate))
-        print('id:', candidate.id, 'total:', candidate.total)
-    #print(f'Title: {elect.results[i].title} Candidate {elect.results[i].id} Total: {elect.results[i].total}')
-"""
-
-"""
 # Tally Remaining Candidates System
 rem_candidates = candidates.copy()
 rem = RemainingCandidatesSystem(rem_candidates, ballots.copy())
 rem.score_ballots()
 #rem.determine_winner_by_majority()
 elect.show_results()
-elect.save_results(rem_candidates, rem.title)
-"""
-
+elect.save_results(rem.title, rem_candidates)
 
 # Tally Redistribution System
 redistribution_candidates = candidates.copy()
 redistribution = RedistributionSystem(redistribution_candidates, ballots.copy())
 redistribution.score_ballots()
-redistribution.determine_winner_by_majority()
+#redistribution.determine_winner_by_majority()
 elect.show_results()
 elect.save_results(redistribution.title, redistribution_candidates)
-
 
 # Tally Average-Weighted Systems
 all_sys = AllVotingWeightedSystem(elect.results)

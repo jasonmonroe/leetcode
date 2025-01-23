@@ -36,8 +36,16 @@ class Candidate:
         self.total = 0
         self.sys_totals = 0
 
-# Input voter ID and return index of a candidate.
 def map_id_to_candidate_index (voted_id, candidates):
+    """
+    Map the ID of a candidate to the index of the candidate.
+
+    :param int voted_id: ID of a candidate.
+    :param candidates candidates:  List of candidates.
+
+    :return: int index: Index of the candidate.
+    """
+
     for index in range (0, len(candidates)):
         if voted_id == candidates[index].id:
             return index
@@ -47,10 +55,15 @@ def map_id_to_candidate_index2(voted_id, candidates):
     candidate_dict = {candidate.id: index for index, candidate in enumerate(candidates)}
     return candidate_dict.get(voted_id)
 
-"""
-Get the placement string for a candidate.
-"""
 def place_str (place, mode):
+    """
+    Get the placement string for a candidate.
+
+    :param int place: What order of placement.
+    :param string mode: What type of placement string to output.
+
+    :return: string attrs[place]: String of the placement.
+    """
     if mode == 'a':
         attrs = ['first', 'second', 'third', 'fourth']
     else:
@@ -58,26 +71,44 @@ def place_str (place, mode):
 
     return attrs[place]
 
-"""
-Get a random index.
-"""
 def ridx (var):
+    """
+    Get a random index.
+
+    :param string var: string to get a random index from.
+    :return int random.randint(0, len(var) - 1): Random index.
+    """
+
     return random.randint(0, len(var) - 1)
 
-"""
-Get unique ID for candidate.
-"""
 def uid(length = 4):
+    """
+    Get a unique ID for a candidate.
+
+    :param int length: Length of string
+    :return: string uuid.uuid4()[:length]: Unique ID.
+    """
+
     return str(uuid.uuid4())[:length]
 
-"""
-Sort the candidates by the total number of votes they have. Winner will be at the top.
-"""
 def sort_candidates (candidates):
+    """
+    Sort the candidates by the total number of votes they have. Winner will be at the top.
+
+    :param candidates:
+
+    :return: list: Sorted list of candidates.
+    """
     return sorted (candidates, key=lambda candidate: candidate.total, reverse = True)
 
-"""
-Get the total percentage of vote for a candidate.
-"""
 def get_totals_pct (candidate, max_points):
+    """
+    Get the total percentage of vote for a candidate.
+
+    :param candidate candidate: Candidate object.
+    :param int max_points: Maximum number of points.
+
+    :return float round: Percentage of the vote.
+    """
+
     return round ((candidate.total / max_points) * PERCENTILE, 2)

@@ -7,9 +7,9 @@
 |
 | Voting System Weights:
 | - Popular Score: 10%
-|   - Weighted (Point) Score: 25%
-|   - Remaining Candidates: 40%
-|   - Redistribution: 25%
+| - Weighted (Point) Score: 25%
+| - Remaining Candidates: 40%
+| - Redistribution: 25%
 """
 
 from helpers import PERCENTILE, FIRST_CHOICE_INDEX
@@ -66,6 +66,7 @@ class AllVotingWeightedSystem():
                 self.candidates.append(candidate)
 
     def show_totals_by_sys(self):
+
         for result in self.results:
             print('\nVoting System:', result['title'])
 
@@ -75,11 +76,10 @@ class AllVotingWeightedSystem():
         # Calculate the total points for each candidate based on the weighted system.
         self.score_ballots()
 
-        # Last result for all systems weighted
-        print('\nVoting System:', self.title)
+        # Last result for all systems weighted.
+        print('\n(All) Voting System:', self.title)
         for candidate in self.candidates:
             print(' Candidate:', candidate.id, 'Total:', candidate.sys_totals)
-
 
     def determine_winner(self):
         """

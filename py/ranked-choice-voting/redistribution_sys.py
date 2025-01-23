@@ -43,9 +43,6 @@ class RedistributionSystem(VotingSystem):
         :return:
         """
 
-        # @todo - remove this method if not needed
-        self.reset_candidate_totals()
-
         candidate_cnt = len(self.candidates)
         choice_cnt = min(MAX_CHOICES, candidate_cnt)
 
@@ -55,8 +52,7 @@ class RedistributionSystem(VotingSystem):
         # Count all first place votes to determine winner.
         while self.determine_winner_by_majority(vote_choice + 1) is not True and vote_choice <= choice_cnt:
 
-            #for vote_choice in range (FIRST_CHOICE_INDEX, choice_cnt): # 1, 2, 3, n ...
-            #print(' while() Vote Choice:', vote_choice, ' ')
+            # print(' while() Vote Choice:', vote_choice, ' ')
 
             # After tallying "new" totals, if there is still no majority, get the least voted candidate.
             loser = self.determine_loser()

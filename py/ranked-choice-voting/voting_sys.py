@@ -33,7 +33,6 @@ class VotingSystem:
         self.majority = round(self.voter_cnt / 2)
         self.choice_vals = []
 
-
     def show_banner(self):
         """
         Show the banner for the voting system.
@@ -124,7 +123,7 @@ class VotingSystem:
 
         return self.candidates
 
-    def determine_winner_by_majority(self, round_num=1):
+    def determine_winner_by_majority(self, round_num):
         """
         Determines winner by majority.
         Checks each candidate to see if they have the majority vote needed to win the election.
@@ -133,19 +132,19 @@ class VotingSystem:
         bool: True if a candidate has the majority vote, False otherwise.
         """
 
-        #print('Determining winner... Round:', round_num)
         #print('Majority to win: ', self.majority)
         print('Round #', round_num)
         for i in range (0, len(self.candidates)):
-            print('Candidate:', self.candidates[i].id, 'Total:', self.candidates[i].total)
+
+            # Output results.
+            print('Debug: Candidate:', self.candidates[i].id, 'Total:', self.candidates[i].total)
+
             if self.candidates[i].total > self.majority:
                 self.candidates[i].is_winner = True
                 self.winner_id = self.candidates[i].id
 
                 self.declare_winner(self.candidates[i].name)
                 return True
-            #else:
-                #print(f'Round: {round_num} Total:{self.candidates[i].total}, Candidate {self.candidates[i].id} does not have majority.')
 
         print('* No winner found *\n')
         return False
@@ -227,6 +226,7 @@ class VotingSystem:
         :param candidates candidates: List or candidates to compare.
         :param string mode: Declaring highest or lowest total points to aggregate.
         :param int choice: Choice order to break the tie.
+
         :return: candidate: candidate with the highest/lowest votes.
         """
 
@@ -246,7 +246,7 @@ class VotingSystem:
 
             # Finally, only one candidate left.
             if len(candidates) == 1:
-                return candidates[0]
+                return candidates[FIRST_CHOICE_INDEX]
 
             print('Warning: No clear winner.')
             return None
@@ -266,7 +266,9 @@ class VotingSystem:
 
         :return: Int winner_id: The candidate with the highest/lowest votes.
         """
-        print('Breaking tie...')
+        if show_output is True:
+            print('Breaking weighted tie...')
+
         winner_id = None
         tie_breaker_total = 0
         next_tied_candidates = []

@@ -31,9 +31,9 @@ class Election:
 
         print('\n----------------------------')
         print('-- E L E C T I O N  D A Y --')
-        print(' ', date.today().strftime("%B %d, %Y"))
+        print('       ', date.today().strftime("%B %d, %Y"))
         print('----------------------------')
-        print('-', date.today().strftime("%B %d, %Y"))
+        #print('-', date.today().strftime("%B %d, %Y"))
         print('- Candidates:', len(self.candidates))
         print('- Voters:', len(self.ballots))
         print('----------------------------')
