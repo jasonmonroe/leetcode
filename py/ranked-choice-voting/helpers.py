@@ -34,6 +34,7 @@ class Candidate:
         self.is_winner = None # False = removed from pool, True = winner, None = still in pool
         self.votes = [0, 0, 0, 0]
         self.total = 0
+        self.sys_totals = 0
 
 # Input voter ID and return index of a candidate.
 def map_id_to_candidate_index (voted_id, candidates):

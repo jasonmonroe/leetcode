@@ -1,7 +1,8 @@
 # Election Class
 import random
 from helpers import uid, ridx, place_str, map_id_to_candidate_index, MIN_CANDIDATES, MAX_CANDIDATES, Candidate, \
-    MIN_VOTERS, MAX_VOTERS, MAX_CHOICES, PERCENTILE, NO_VOTE_PCT_THRESHOLD, NO_VOTE_VAL, show_output
+    MIN_VOTERS, MAX_VOTERS, MAX_CHOICES, PERCENTILE, NO_VOTE_PCT_THRESHOLD, NO_VOTE_VAL, show_output, sort_candidates, \
+    FIRST_CHOICE_INDEX
 from datetime import date
 
 class Election:
@@ -9,7 +10,7 @@ class Election:
         self.ballots = []
         self.candidates = []
         self.pool = []  # pool of candidates to vote on
-
+        self.results = [] # Election results
 
     def election_day(self):
         """
@@ -24,11 +25,13 @@ class Election:
     def show_banner(self):
         """
         Display the election banner.
+
         :return:
         """
 
         print('\n----------------------------')
         print('-- E L E C T I O N  D A Y --')
+        print(' ', date.today().strftime("%B %d, %Y"))
         print('----------------------------')
         print('-', date.today().strftime("%B %d, %Y"))
         print('- Candidates:', len(self.candidates))
@@ -186,9 +189,9 @@ class Election:
 
         :return: None
         """
-
+        show_output = False
         if self.validate_input('\nShow output? (y/n) ', True) == 'y':
-            global show_output
+            #global show_output
             show_output = True
 
         candidate_cnt = self.validate_input(f'How many candidates ({MIN_CANDIDATES} to {MAX_CANDIDATES}) will register for the election?')
@@ -214,7 +217,7 @@ class Election:
         """
         Register candidates for the election.
 
-        :param candidate_cnt: Number of candidates that are registered.
+        :param int candidate_cnt: Number of candidates that are registered.
 
         :return: None
         """
@@ -236,8 +239,13 @@ class Election:
 
         print('-------------------------------------')
 
-    # Get the number of voters who registered for this election
     def get_voter_cnt(self):
+        """
+        Get the number of voters who registered for this election.
+
+        :return: Int voter_cnt: The number of voters who registered for this election.
+        """
+
         voter_cnt = self.validate_input('\nHow many voters are there?')
 
         if voter_cnt == '':
@@ -270,17 +278,17 @@ class Election:
             self.reset_pool()
             self.ballots.append([])
 
-            if show_output == 'y':
-                print(f'\nNew Ballot {self.ballots[i]}')
-                print(f'Voter {i} is voting...')
+            #if show_output == 'y':
+                #print(f'\nNew Ballot {self.ballots[i]}')
+                #print(f'Voter {i} is voting...')
 
-            for j in range (0, choice_cnt):
+            for _ in range (0, choice_cnt):
                 candidate_chosen = self.mark_candidate()
                 self.ballots[i].append(candidate_chosen)
 
-                if show_output is True:
-                    p_str = place_str(j, 'p')
-                    print(f'Voter {i} voted {p_str} for Candidate ID: {candidate_chosen}')
+                #if show_output is True:
+                 #   p_str = place_str(j, 'p')
+                 #   print(f'Voter {i} voted {p_str} for Candidate ID: {candidate_chosen}')
 
             # Display ballot for voter
             print(f'Voter {i} - Ballot: {self.ballots[i]}')
@@ -329,8 +337,8 @@ class Election:
             for vote_choice in range (0, len(self.ballots[i])):
                 voted_id = self.ballots[i][vote_choice]
 
-                if show_output is True:
-                    print(f'Ballot {i} choice {vote_choice} for candidate {voted_id}')
+                #if show_output is True:
+                #    print(f'Ballot {i} choice {vote_choice} for candidate {voted_id}')
 
                 # Update the corresponding place attribute based on vote_choice.
                 if voted_id != NO_VOTE_VAL:
@@ -347,3 +355,59 @@ class Election:
             print(f' Candidate {self.candidates[i].id} ', self.candidates[i].votes)
 
         print('------------------------------')
+
+    def save_results(self, title, sorted_candidates):
+        """
+        Save the election results
+        """
+
+        self.results.append({'title': title, 'candidates': sorted_candidates})
+
+    def show_results(self, title=''):
+        """
+        Output the election results.
+
+        :return:
+        """
+
+        self.candidates = sort_candidates(self.candidates)
+
+        # Only show the first result for a popular vote system.
+        if title == 'popular':
+            place = place_str(FIRST_CHOICE_INDEX, 'p')
+            print(f'{place}: ({self.candidates[FIRST_CHOICE_INDEX].id}) {self.candidates[FIRST_CHOICE_INDEX].name} - {self.candidates[FIRST_CHOICE_INDEX].party} Party - Total: {self.candidates[FIRST_CHOICE_INDEX].total}')
+
+        else:
+            for i in range(0, len(self.candidates)):
+                place = place_str(i, 'p')
+                print(f'{place}: ({self.candidates[i].id}) {self.candidates[i].name} - {self.candidates[i].party} Party - Total: {self.candidates[i].total}')
+
+
+    # Traverse through a list of candidates that participated in the election using the Alternative Voting System.
+    def show_candidate_results(self, candidates, title):
+
+        print(f'\n* {title} *')
+
+        max_total = len(self.ballots)
+
+        for i in range (len(candidates)):
+            if candidates[i].is_winner is True:
+                print(f'\n*** Winner: {candidates[i].name } ***')
+
+            totals_pct = get_totals_pct(candidates[i], max_total)
+
+            print(f'\n=== Candidates ({candidates[i].id}) ===')
+            print(f'Name: {candidates[i].name}')
+            print(f'{candidates[i].party} Party')
+            print(f'Total/Points: {candidates[i].total} ({totals_pct}%)')
+            print('--- Votes ---')
+
+            for j in range (0, MAX_CHOICES):
+                print(f'{place_str(j, "p")}: {candidates[i].votes[j]}')
+
+    def show_results2(self, ces_c, weight_c, next_c):
+        self.show_banner()
+        self.show_candidate_results(ces_c, 'Candidate Elimination System')
+        self.show_candidate_results(weight_c, 'Weighted Voting System')
+        self.show_candidate_results(next_c, 'Next Choice Voting System')
+        print('\n')

@@ -23,14 +23,16 @@
 """
 
 from helpers import MAX_CHOICES, NO_VOTE_VAL, FIRST_CHOICE_INDEX, map_id_to_candidate_index, sort_candidates, place_str
-from voting_system import VotingSystem
+from voting_sys import VotingSystem
 
 class RemainingCandidatesSystem(VotingSystem):
     def __init__(self, candidates, ballots):
         super().__init__(candidates, ballots)
-        self.title = 'Remaining Candidates'
 
-    def recount_ballots(self, round_num):
+        self.title = 'Remaining Candidates'
+        self.show_banner()
+
+    def recount_ballots(self):
         """
         Count all first place votes to determine winner.
         If no majority, count every voter's next choice votes and add to the total.
@@ -38,7 +40,7 @@ class RemainingCandidatesSystem(VotingSystem):
         Example: Second round
         voter_cnt = len(self.ballots)
 
-        :parameter round_num: The current round number.
+        :param int round_num: The current round number.
         """
 
         # Reset total points for each candidate so we can count the first choice each round.
@@ -53,10 +55,14 @@ class RemainingCandidatesSystem(VotingSystem):
             if voted_id != NO_VOTE_VAL:
                 index = map_id_to_candidate_index(voted_id, self.candidates)
                 self.candidates[index].total += 1
-                print('Round:', round_num, 'Voted ID:', voted_id, 'Total:', self.candidates[index].total)
+                #print('Round:', round_num, 'Voted ID:', voted_id, 'Total:', self.candidates[index].total)
             else:
-                print(f'Voter {i} did not vote for {place_str(0, "p")}.')
+                pass
+                #print(f'Voter {i} did not vote for {place_str(0, "p")}.')
 
+        #print('\nRound #', round_num)
+        #for candidate in self.candidates:
+        #    print(f'Candidate: {candidate.id} Total: {candidate.total}')
 
     def score_ballots(self):
         """
@@ -65,9 +71,9 @@ class RemainingCandidatesSystem(VotingSystem):
         """
 
         round_num = 1
-        self.recount_ballots(round_num)
+        self.recount_ballots()
 
-        while self.determine_winner(round_num) != True and round_num <= MAX_CHOICES:
+        while self.determine_winner_by_majority(round_num) != True and round_num <= MAX_CHOICES:
 
             # After tallying "new" totals, if there is still no majority, get the least voted candidate.
             loser = self.determine_loser()
@@ -80,7 +86,7 @@ class RemainingCandidatesSystem(VotingSystem):
             self.remove_loser_from_ballot(loser)
 
             round_num += 1
-            self.recount_ballots(round_num)
+            self.recount_ballots()
 
         # Order candidates by points descending
         self.candidates = sort_candidates(self.candidates)

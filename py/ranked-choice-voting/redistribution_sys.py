@@ -2,7 +2,7 @@
 |--------------------------------------------------------------------------
 | Redistribution System
 |--------------------------------------------------------------------------
-| If no winner, remove the candidate with the least amount of votes.  Then
+| If no winner, remove the candidate with the least number of votes.  Then
 | for every ballot where the losing candidate was chosen, count the next choice
 | votes of the losing candidate and redistribute them to the remaining candidates.
 | Continue this process until a candidate receives more than half of the votes
@@ -10,12 +10,13 @@
 """
 
 from helpers import map_id_to_candidate_index, sort_candidates, place_str, MAX_CHOICES, NO_VOTE_VAL, FIRST_CHOICE_INDEX
-from voting_system import VotingSystem
+from voting_sys import VotingSystem
 
 class RedistributionSystem(VotingSystem):
     def __init__(self, candidates, ballots):
         super().__init__(candidates, ballots)
         self.title = 'Redistribution'
+        self.show_banner()
 
     def recount_ballots(self, vote_choice):
         """
@@ -50,20 +51,19 @@ class RedistributionSystem(VotingSystem):
 
         self.recount_ballots(FIRST_CHOICE_INDEX)
         vote_choice = FIRST_CHOICE_INDEX
-        print('After first recount...')
 
         # Count all first place votes to determine winner.
-        while self.determine_winner(vote_choice+1) is not True and vote_choice <= choice_cnt:
+        while self.determine_winner_by_majority(vote_choice + 1) is not True and vote_choice <= choice_cnt:
 
             #for vote_choice in range (FIRST_CHOICE_INDEX, choice_cnt): # 1, 2, 3, n ...
-            print(' while() Vote Choice:', vote_choice, ' ')
+            #print(' while() Vote Choice:', vote_choice, ' ')
 
             # After tallying "new" totals, if there is still no majority, get the least voted candidate.
             loser = self.determine_loser()
             if loser is None:
                 break
 
-            print(' Loser:', loser.id)
+            #print(' Loser:', loser.id)
 
             # Apply loser votes to other candidates.
             self.apply_loser_votes_to_other_candidates(loser, vote_choice)
@@ -89,16 +89,16 @@ class RedistributionSystem(VotingSystem):
         :return: None
         """
 
-        print(f'  Applying loser {loser.id}\'s votes to other candidates...')
+        #print(f'  Applying loser {loser.id}\'s votes to other candidates...')
 
         next_choice = choice + 1
-        print(f'  Checking ballots for choice {choice}:', self.ballots)
+        #print(f'  Checking ballots for choice {choice}:', self.ballots)
         for i in range (0, len(self.ballots)):
             if self.ballots[i][choice] == loser.id:
-                print(f'   Voter {i} voted for loser {loser.id} at {place_str(choice, "p")}')
+                #print(f'   Voter {i} voted for loser {loser.id} at {place_str(choice, "p")}')
                 if next_choice < MAX_CHOICES:
                     next_choice_voted_id = self.ballots[i][next_choice]
-                    print('   Next choice is candidate ID:', next_choice_voted_id)
+                    #print('   Next choice is candidate ID:', next_choice_voted_id)
 
                     if next_choice_voted_id != NO_VOTE_VAL:
                         next_choice_index = map_id_to_candidate_index(next_choice_voted_id, self.candidates)
@@ -106,12 +106,15 @@ class RedistributionSystem(VotingSystem):
                         # Only apply losing votes to candidates that are still in the pool
                         if self.candidates[next_choice_index].is_winner is None and self.candidates[next_choice_index].id != loser.id:
                             self.candidates[next_choice_index].total += 1
-                            print(f'   Voter {i} next choice went to {self.candidates[next_choice_index].id}. New total:', self.candidates[next_choice_index].total)
+                            #print(f'   Voter {i} next choice went to {self.candidates[next_choice_index].id}. New total:', self.candidates[next_choice_index].total)
 
                         else:
-                            print(f'  Can\'t apply losing vote {self.candidates[next_choice_index].id} as this candidate has already lost.')
+                          #  print(f'  Can\'t apply losing vote {self.candidates[next_choice_index].id} as this candidate has already lost.')
+                            pass
 
                     else:
-                        print(f'   Voter {i} did not vote for {place_str(choice, "p")}.')
+                        #print(f'   Voter {i} did not vote for {place_str(choice, "p")}.')
+                        pass
                 else:
-                    print(f'  Warning: Next choice {next_choice} is out of range. Do nothing.')
+                    #print(f'  Warning: Next choice {next_choice} is out of range. Do nothing.')
+                    pass

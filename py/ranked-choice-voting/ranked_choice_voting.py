@@ -23,44 +23,13 @@
 
 # Import Libraries
 from election import Election
-from helpers import uid
-from redistribution_system import RedistributionSystem
-from rem_candidates_system import RemainingCandidatesSystem
-from weighted_score_system import WeightedScoreSystem
+from helpers import uid, show_output
 
-"""
-|--------------------------------------------------------------------------
-| All Voting Weighted System
-|--------------------------------------------------------------------------
-| Take the number of points of each candidate for each voting system and weigh
-| them to determine an overall winner. 
-|
-| Voting System Weights:
-|   - Weighted (Point) Score: 25%
-|   - Remaining Candidates: 50%
-|   - Redistribution: 25%
-"""
-class AllVotingWeightedSystem:
-    def __init__(self):
-
-        # Voting System Weights
-        self.weighted_score = 0.25
-        self.remaining_candidates = 0.50
-        self.redistribution = 0.25
-
-    def calc_totals_by_system(self, weighted, remaining, redistribution):
-        """
-        Calculate the total points for each candidate based on the weighted system.
-
-        :param float weighted: The weighted score system total.
-        :param float remaining: The remaining candidates system total.
-        :param float redistribution: The redistribution system total.
-
-        :return: None
-        """
-
-        candidates = []
-
+from all_voting_sys_weighted import AllVotingWeightedSystem
+from popular_vote_sys import PopularVoteSystem
+from redistribution_sys import RedistributionSystem
+from rem_candidates_sys import RemainingCandidatesSystem
+from weighted_score_sys import WeightedScoreSystem
 
 
 ### Run Program
@@ -75,37 +44,59 @@ elect.election_day()
 ballots = elect.ballots.copy()
 candidates = elect.candidates.copy()
 
+"""
+# Popular Vote System
+popular_candidates = candidates.copy()
+popular = PopularVoteSystem(popular_candidates, ballots.copy())
+popular.score_ballots()
+popular_candidates = popular.determine_winner_by_popular()
+elect.show_results('popular')
+elect.save_results(popular.title, popular_candidates)
 
 # Tally Weighted Score System
-#print('\n\n- WEIGHTED SCORE SYSTEM -')
 weight_candidates = candidates.copy()
 weight = WeightedScoreSystem(weight_candidates, ballots.copy())
-print(f'\n- {weight.title.upper()} VOTING SYSTEM -')
 weight.score_ballots()
-weight.determine_winner()
+weight_candidates = weight.determine_winner_by_popular()
+elect.show_results()
+elect.save_results(weight.title, weight_candidates)
+"""
 
+"""
+print('line 84')
+for result in elect.results:
+    print(result['title'])
+    print('line 89')
+    for candidate in result['candidates']:
+        print(vars(candidate))
+        print('id:', candidate.id, 'total:', candidate.total)
+    #print(f'Title: {elect.results[i].title} Candidate {elect.results[i].id} Total: {elect.results[i].total}')
+"""
 
-
+"""
 # Tally Remaining Candidates System
-#print('\n\n- REMAINING CANDIDATES SYSTEM -')
 rem_candidates = candidates.copy()
 rem = RemainingCandidatesSystem(rem_candidates, ballots.copy())
-print(f'\n- {rem.title.upper()} VOTING SYSTEM -')
 rem.score_ballots()
-
+#rem.determine_winner_by_majority()
+elect.show_results()
+elect.save_results(rem_candidates, rem.title)
+"""
 
 
 # Tally Redistribution System
 redistribution_candidates = candidates.copy()
 redistribution = RedistributionSystem(redistribution_candidates, ballots.copy())
-print(f'\n- {redistribution.title.upper()} VOTING SYSTEM -')
 redistribution.score_ballots()
+redistribution.determine_winner_by_majority()
+elect.show_results()
+elect.save_results(redistribution.title, redistribution_candidates)
 
 
 # Tally Average-Weighted Systems
-print('- AVERAGE WEIGHTED SYSTEM -')
-all_weighted = AllVotingWeightedSystem()
-
+all_sys = AllVotingWeightedSystem(elect.results)
+all_sys.show_totals_by_sys()
+all_sys.determine_winner()
 
 # Show Results
 print(f'\n* End Benchmark ID: {benchmark_id} *')
