@@ -27,7 +27,7 @@ CREATE TABLE timezone (
     name VARCHAR(32) NOT NULL, -- i.e: America/Chicago
     offset VARCHAR(16), -- i.e: UTC+12:00
     group_offset BOOLEAN default FALSE, -- is offset UNIQUE , used to group timezones by offset so we don't have to display all timezones
-    ordering INT UNSIGNED, -- order by offset
+    ordering INT UNSIGNED,     -- order by offset
     status BOOLEAN DEFAULT TRUE,
     PRIMARY KEY (id)
 );
@@ -45,12 +45,12 @@ CREATE TABLE country (
     id INT unsigned UNIQUE NOT NULL AUTO_INCREMENT,
     short_name VARCHAR(64) UNIQUE NOT NULL,
     long_name VARCHAR(128) UNIQUE NOT NULL,
-    local_name VARCHAR(64),
+    local_name VARCHAR(64) UNIQUE,
     alpha_2_code VARCHAR(2) UNIQUE NOT NULL, -- iso code 2 chars
     alpha_3_code VARCHAR(4) , -- iso code 3 chars
     numeric_code INT(3) UNIQUE , -- ie: 840
     capital VARCHAR(64), -- optional
-    capital_id INT unsigned,
+    capital_id INT UNSIGNED,    
     nationality_plural VARCHAR(32),
     nationality_singular VARCHAR(32),
     continent VARCHAR(16), -- i.e: Africa, Europe, North America, South America, Oceania, Asia, Middle East
@@ -98,8 +98,8 @@ CREATE TABLE metro (
 CREATE TABLE city (
     id INT unsigned UNIQUE NOT NULL AUTO_INCREMENT,
     region_id INT UNSIGNED NOT NULL,
-    metro_id INT UNSIGNED,
-    timezone_id INT unsigned,
+    metro_id INT UNSIGNED,    
+    timezone_id INT UNSIGNED,    
     location_id INT,
     name VARCHAR(64) NOT NULL,
     -- coordinates POINT NOT NULL SRID 4326, -- used for Geographic Information System
