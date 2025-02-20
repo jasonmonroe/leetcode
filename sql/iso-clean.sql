@@ -37,7 +37,7 @@ CREATE TABLE timezone (
     standard_time_name VARCHAR(64) NOT NULL, -- i.e: Central Standard Time
     name VARCHAR(32) NOT NULL, -- i.e: America/Chicago
     offset VARCHAR(16), -- i.e: UTC+12:00
-    group_offset BOOLEAN default FALSE, -- used to group timezones by offset to prevent displaying all timezones
+    group_offset BOOLEAN DEFAULT FALSE, -- used to group timezones by offset to prevent displaying all timezones
     ordering INT UNSIGNED,     -- order by offset
     status BOOLEAN DEFAULT TRUE,
     PRIMARY KEY (id)
