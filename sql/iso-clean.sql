@@ -1,22 +1,33 @@
--- -----------------------------------------------------------------------------
--- Customized database for International Organization for Standardization (ISO)
--- Procured by Jason Monroe (jason@jasonmonroe.com)
--- @link https://www.iso.org/home.html
--- @link https://www.iso.org/obp/ui/#iso:pub:PUB500001:en
--- @link https://en.wikipedia.org/wiki/List_of_ISO_639_language_codes
---
--- Note: Storing latitude and longitude coordinates for the Haversine Formula
--- -----------------------------------------------------------------------------
+/*
+|----------------------------------------------------------------------
+| International Organization for Standardization (ISO) Database Schema
+|----------------------------------------------------------------------
+| This script is a customized database for geographic information for
+| the global standards for trusted goods and services. ISO is an
+| independent, non-governmental international organization. It brings
+| global experts together to agree on the best ways of doing things.
+|
+| Procured by Jason Monroe (jason@jasonmonroe.com)
+| @link https://www.iso.org/home.html
+| @link https://www.iso.org/obp/ui/#search
+| @link https://www.iso.org/obp/ui/#iso:pub:PUB500001:en
+| @link https://en.wikipedia.org/wiki/List_of_ISO_639_language_codes
+| @link https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2
+|
+| Note: Storing latitude and longitude coordinates for the Haversine
+| Formula.
+*/
 
-CREATE DATABASE iso;
+CREATE DATABASE IF NOT EXISTS iso;
+CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 USE iso;
 
 CREATE TABLE location (
     id INT unsigned UNIQUE NOT NULL AUTO_INCREMENT,
     coordinates POINT NOT NULL SRID 4326, -- used for Geographic Information System
     SPATIAL INDEX(coordinates),  -- Enables efficient spatial queries
-    latitude decimal(11, 8), -- used for Haversine Formula (North to South)
-    longitude decimal(11, 8), -- used for Haversine Formula (East to West)
+    latitude DECIMAL(11, 8), -- used for Haversine Formula (North to South)
+    longitude DECIMAL(11, 8), -- used for Haversine Formula (East to West)
     status BOOLEAN DEFAULT TRUE,
     PRIMARY KEY (id)
 );
@@ -26,7 +37,7 @@ CREATE TABLE timezone (
     standard_time_name VARCHAR(64) NOT NULL, -- i.e: Central Standard Time
     name VARCHAR(32) NOT NULL, -- i.e: America/Chicago
     offset VARCHAR(16), -- i.e: UTC+12:00
-    group_offset BOOLEAN default FALSE, -- is offset UNIQUE , used to group timezones by offset so we don't have to display all timezones
+    group_offset BOOLEAN default FALSE, -- used to group timezones by offset to prevent displaying all timezones
     ordering INT UNSIGNED,     -- order by offset
     status BOOLEAN DEFAULT TRUE,
     PRIMARY KEY (id)
@@ -60,8 +71,8 @@ CREATE TABLE country (
     location_id INT, -- if normalized
     -- coordinates POINT NOT NULL SRID 4326, -- used for Geographic Information System (GIS)
     -- SPATIAL INDEX(coordinates),  -- Enables efficient spatial queries
-    -- longitude decimal(11, 8), -- used for Haversine Formula
-    -- latitude decimal(11, 8), -- used for Haversine Formula
+    -- latitude DECIMAL(11, 8), -- used for Haversine Formula
+    -- longitude DECIMAL(11, 8), -- used for Haversine Formula
     status BOOLEAN DEFAULT TRUE,
     PRIMARY KEY (id),
     FOREIGN KEY (location_id) REFERENCES location(id) ON UPDATE CASCADE ON DELETE CASCADE
@@ -76,8 +87,8 @@ CREATE TABLE region (
     iso_code VARCHAR(8) NOT NULL, -- 3166-2 iso code
     -- coordinates POINT NOT NULL SRID 4326, -- used for Geographic Information System
     -- SPATIAL INDEX(coordinates), -- enables efficient spatial queries
-    -- longitude decimal(11, 8), -- used for Haversine Formula
-    -- latitude decimal(11, 8), -- used for Haversine Formula
+    -- latitude DECIMAL(11, 8), -- used for Haversine Formula
+    -- longitude DECIMAL(11, 8), -- used for Haversine Formula
     status BOOLEAN DEFAULT TRUE,
     PRIMARY KEY (id),
     FOREIGN KEY (country_id) REFERENCES country(id) ON UPDATE CASCADE ON DELETE CASCADE,
@@ -99,13 +110,13 @@ CREATE TABLE city (
     id INT unsigned UNIQUE NOT NULL AUTO_INCREMENT,
     region_id INT UNSIGNED NOT NULL,
     metro_id INT UNSIGNED,    
-    timezone_id INT UNSIGNED,    
+    timezone_id INT UNSIGNED,
     location_id INT,
     name VARCHAR(64) NOT NULL,
     -- coordinates POINT NOT NULL SRID 4326, -- used for Geographic Information System
     -- SPATIAL INDEX(coordinates),  -- Enables efficient spatial queries
-    -- longitude decimal(11, 8), -- used for Haversine Formula
-    -- latitude decimal(11, 8), -- used for Haversine Formula
+    -- latitude DECIMAL(11, 8), -- used for Haversine Formula
+    -- longitude DECIMAL(11, 8), -- used for Haversine Formula
     status BOOLEAN DEFAULT TRUE,
     PRIMARY KEY (id),
     FOREIGN KEY (region_id) REFERENCES region(id) ON UPDATE CASCADE ON DELETE CASCADE,
