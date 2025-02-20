@@ -47,24 +47,29 @@ CREATE TABLE timezone (
     PRIMARY KEY (id)
     );
 
+-- ISO 639
 CREATE TABLE language (
     id INT UNSIGNED UNIQUE NOT NULL AUTO_INCREMENT,
     name VARCHAR(32) NOT NULL,
     local_name VARCHAR(32), -- name in local language
-    iso_code CHAR(2) NOT NULL, -- ISO 639 alpha-2 codes
+    alpha_2_code CHAR(2) UNIQUE NOT NULL, -- iso code 2 chars
+    alpha_3_code CHAR(3) UNIQUE NOT NULL, -- iso code 3 chars
     status BOOLEAN DEFAULT TRUE,
     PRIMARY KEY (id)
 );
 
+-- ISO 4217
+-- @link https://www.iso.org/iso-4217-currency-codes.html
 CREATE TABLE currency (
     id INT UNSIGNED UNIQUE NOT NULL AUTO_INCREMENT,
-    name VARCHAR(32) NOT NULL, -- i.e: United States Dollar
-    symbol VARCHAR(4) NOT NULL, -- i.e: $
+    name VARCHAR(64) NOT NULL, -- i.e: United States Dollar
     iso_code VARCHAR(3) NOT NULL, -- i.e: USD
+    symbol VARCHAR(4) NOT NULL, -- i.e: $
     status BOOLEAN DEFAULT TRUE,
     PRIMARY KEY (id)
 );
 
+--  ISO 3166-1
 CREATE TABLE country (
     id INT UNSIGNED UNIQUE NOT NULL AUTO_INCREMENT,
     short_name VARCHAR(64) UNIQUE NOT NULL,
@@ -75,11 +80,10 @@ CREATE TABLE country (
     numeric_code INT(3) UNIQUE , -- ie: 840
     capital VARCHAR(64), -- optional
     capital_id INT UNSIGNED,
-    nationality_plural VARCHAR(32),
-    nationality_singular VARCHAR(32),
+    nationality_plural VARCHAR(64),
+    nationality_singular VARCHAR(64),
     continent VARCHAR(16), -- i.e: Africa, Europe, North America, South America, Oceania, Asia, Middle East, Caribbean
     currency_id INT UNSIGNED,
-    comment VARCHAR(255),
     location_id INT UNSIGNED, -- if normalized
     coordinates POINT NOT NULL SRID 4326, -- used for Geographic Information System (GIS)
     SPATIAL INDEX(coordinates),  -- enables efficient spatial queries
@@ -92,6 +96,7 @@ CREATE TABLE country (
     FOREIGN KEY (currency_id) REFERENCES currency(id) ON UPDATE CASCADE ON DELETE CASCADE
 );
 
+-- ISO 33166-2
 CREATE TABLE region (
     id INT UNSIGNED UNIQUE NOT NULL AUTO_INCREMENT,
     country_id INT UNSIGNED NOT NULL,
@@ -154,7 +159,8 @@ CREATE INDEX idx_tz_group_offset ON timezone(group_offset);
 -- Indices: language
 CREATE INDEX idx_language_name ON language(name);
 CREATE INDEX idx_language_local_name ON language(local_name);
-CREATE INDEX idx_language_code ON language(iso_code);
+CREATE INDEX idx_language_alpha_2_code ON language(alpha_2_code);
+CREATE INDEX idx_language_alpha_3_code ON language(alpha_3_code);
 
 -- Indices: country
 CREATE INDEX idx_country_short_name ON country(short_name);
