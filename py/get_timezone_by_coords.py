@@ -11,10 +11,8 @@ import time
 import timeit
 
 # define key
-api_key = "W2QR9WC481D7"
-#file_name = 'update-city-timezone-name-v2.sql'
+api_key = "" # put API key here
 file_name = "update-loc-tz.sql"
-#full_url = f"http://api.timezonedb.com/v2.1/get-time-zone?key={api_key}&format=json&by=position&lat=40.689247&lng=-74.044502"
 
 # Database connection function
 def db_connect():
@@ -36,23 +34,6 @@ def get_all_coords(chunk_size=max_chunks):
     cur = db.cursor()
 
     sql_query = f"""
-SELECT r.location_id AS id, r.latitude, r.longitude
-FROM country co,
-     region r,
-     city ci,
-     location l
-WHERE ci.region_id = r.id
-AND r.country_id = co.id
-AND r.location_id = l.id
-AND co.alpha_2_code NOT IN ('US', 'CA', 'MX', 'BR', 'CL', 'PT', 'RU', 'CN', 'ID', 'KZ', 'MN', 'AU', 'NZ')
--- AND l.timezone_id IS NULL
- 
-GROUP BY r.location_id, r.latitude, r.longitude
-ORDER BY r.location_id
-
-"""
-
-    sql_query = f"""
 SELECT id, latitude as lat, longitude as lon
 from location
 where timezone_id is null and status = 1 and latitude is not null and longitude is not null order by id desc
@@ -72,7 +53,6 @@ where timezone_id is null and status = 1 and latitude is not null and longitude 
 
 # Function to get timezone name for given coordinates
 def fetch_tz_name_by_coords(lat, lon):
-    #url = f"http://api.timezonedb.com/v2.1/get-time-zone?key={api_key}&format=json&by=position&lat={lat}&lng={lon}"
     url = f"http://vip.timezonedb.com/v2.1/get-time-zone?key={api_key}&format=json&fields=zoneName&by=position&lat={lat}&lng={lon}"
 
     try:
@@ -136,16 +116,14 @@ cur = db.cursor()
 
 for chunk in get_all_coords():
     for loc_id, lat, lon in chunk:
-        #time.sleep(0.333)
+
         tz_name = fetch_tz_name_by_coords(lat, lon)
         if tz_name:
             sql = f"UPDATE iso.location SET timezone_id = (SELECT id FROM timezone WHERE name = '{tz_name}') WHERE id = {loc_id};"
             print(sql)
-            #cur.execute(sql, (tz_name, loc_id))
             cur.execute(sql)
             db.commit()
-            #update_sql()
-            #lines.append(sql)
+
 
         # Throttle requests to avoid API limits
         request_count += 1
