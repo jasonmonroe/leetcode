@@ -17,7 +17,6 @@ Formula.
 @link https://www.iso.org/obp/ui/#iso:pub:PUB500001:en
 @link https://en.wikipedia.org/wiki/List_of_ISO_639_language_codes
 @link https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2
-@link https://mkyong.com/java8/java-display-all-zoneid-and-its-utc-offset/
 @link https://www.timeanddate.com/time/zones/
 */
 
@@ -30,16 +29,18 @@ CREATE TABLE location (
     id INT UNSIGNED UNIQUE NOT NULL AUTO_INCREMENT,
     coordinates POINT NOT NULL SRID 4326, -- used for Geographic Information System
     SPATIAL INDEX(coordinates),  -- Enables efficient spatial queries
-    latitude DECIMAL(11, 8), -- used for Haversine Formula (North to South)
+    latitude DECIMAL(10wd, 8), -- used for Haversine Formula (North to South)
     longitude DECIMAL(11, 8), -- used for Haversine Formula (East to West)
     status BOOLEAN DEFAULT TRUE,
     PRIMARY KEY (id)
 );
 
+-- @link https://mkyong.com/java8/java-display-all-zoneid-and-its-utc-offset/
 CREATE TABLE timezone (
     id INT UNSIGNED UNIQUE NOT NULL AUTO_INCREMENT,
     standard_time_name VARCHAR(64) NOT NULL, -- i.e: Central Standard Time
     name VARCHAR(32) NOT NULL, -- i.e: America/Chicago
+    alpha_2_code CHAR(2),
     offset VARCHAR(16), -- i.e: UTC+12:00
     group_offset BOOLEAN DEFAULT FALSE, -- used to group timezones by offset to prevent displaying all timezones
     ordering INT UNSIGNED, -- order by offset
@@ -50,7 +51,7 @@ CREATE TABLE timezone (
 -- ISO 639
 CREATE TABLE language (
     id INT UNSIGNED UNIQUE NOT NULL AUTO_INCREMENT,
-    name VARCHAR(32) NOT NULL,
+    name VARCHAR(32) UNIQUE NOT NULL,
     local_name VARCHAR(32), -- name in local language
     alpha_2_code CHAR(2) UNIQUE NOT NULL, -- iso code 2 chars
     alpha_3_code CHAR(3) UNIQUE NOT NULL, -- iso code 3 chars
@@ -62,8 +63,8 @@ CREATE TABLE language (
 -- @link https://www.iso.org/iso-4217-currency-codes.html
 CREATE TABLE currency (
     id INT UNSIGNED UNIQUE NOT NULL AUTO_INCREMENT,
-    name VARCHAR(64) NOT NULL, -- i.e: United States Dollar
-    iso_code VARCHAR(3) NOT NULL, -- i.e: USD
+    name VARCHAR(64) UNIQUE NOT NULL, -- i.e: United States Dollar
+    iso_code VARCHAR(3) UNIQUE NOT NULL, -- i.e: USD
     symbol VARCHAR(4) NOT NULL, -- i.e: $
     status BOOLEAN DEFAULT TRUE,
     PRIMARY KEY (id)
@@ -74,7 +75,7 @@ CREATE TABLE country (
     id INT UNSIGNED UNIQUE NOT NULL AUTO_INCREMENT,
     short_name VARCHAR(64) UNIQUE NOT NULL,
     long_name VARCHAR(128) UNIQUE NOT NULL,
-    local_name VARCHAR(64),
+    local_name VARCHAR(64) UNIQUE,
     alpha_2_code CHAR(2) UNIQUE NOT NULL, -- iso code 2 chars
     alpha_3_code CHAR(3) UNIQUE NOT NULL, -- iso code 3 chars
     numeric_code INT(3) UNIQUE , -- ie: 840
@@ -83,11 +84,12 @@ CREATE TABLE country (
     nationality_plural VARCHAR(64),
     nationality_singular VARCHAR(64),
     continent VARCHAR(16), -- i.e: Africa, Europe, North America, South America, Oceania, Asia, Middle East, Caribbean
+    flag_emoji VARCHAR(2) UNIQUE CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci, -- emoji icon
     currency_id INT UNSIGNED,
     location_id INT UNSIGNED, -- if normalized
     coordinates POINT NOT NULL SRID 4326, -- used for Geographic Information System (GIS)
     SPATIAL INDEX(coordinates),  -- enables efficient spatial queries
-    latitude DECIMAL(11, 8), -- used for Haversine Formula
+    latitude DECIMAL(10, 8), -- used for Haversine Formula
     longitude DECIMAL(11, 8), -- used for Haversine Formula
     status BOOLEAN DEFAULT TRUE,
     PRIMARY KEY (id),
@@ -103,10 +105,10 @@ CREATE TABLE region (
     location_id INT UNSIGNED,
     language_id INT UNSIGNED,
     name VARCHAR(64) NOT NULL,
-    iso_code VARCHAR(8) NOT NULL, -- 3166-2 iso sub-division code
+    iso_code VARCHAR(8) UNIQUE NOT NULL, -- 3166-2 iso sub-division code
     coordinates POINT NOT NULL SRID 4326, -- used for Geographic Information System
     SPATIAL INDEX(coordinates), -- enables efficient spatial queries
-    latitude DECIMAL(11, 8), -- used for Haversine Formula
+    latitude DECIMAL(10, 8), -- used for Haversine Formula
     longitude DECIMAL(11, 8), -- used for Haversine Formula
     status BOOLEAN DEFAULT TRUE,
     PRIMARY KEY (id),
@@ -120,11 +122,13 @@ CREATE TABLE region (
 CREATE TABLE metro (
     id INT UNSIGNED UNIQUE NOT NULL AUTO_INCREMENT,
     city_id INT, -- used as a REFERENCES to the city proper of the metro (optional)
-    name VARCHAR(64) NOT NULL,
+    name VARCHAR(64) UNIQUE NOT NULL,
     status BOOLEAN DEFAULT TRUE,
     PRIMARY KEY (id)
 );
 
+-- cities
+-- @link https://raw.githubusercontent.com/dr5hn/countries-states-cities-database/refs/heads/master/sql/cities.sql
 CREATE TABLE city (
     id INT UNSIGNED UNIQUE NOT NULL AUTO_INCREMENT,
     region_id INT UNSIGNED NOT NULL,
@@ -134,7 +138,7 @@ CREATE TABLE city (
     name VARCHAR(64) NOT NULL,
     coordinates POINT NOT NULL SRID 4326, -- used for Geographic Information System
     SPATIAL INDEX(coordinates),  -- Enables efficient spatial queries
-    latitude DECIMAL(11, 8), -- used for Haversine Formula
+    latitude DECIMAL(10, 8), -- used for Haversine Formula
     longitude DECIMAL(11, 8), -- used for Haversine Formula
     status BOOLEAN DEFAULT TRUE,
     PRIMARY KEY (id),
@@ -150,11 +154,13 @@ CREATE TABLE city (
 CREATE SPATIAL INDEX idx_location_coordinates ON location(coordinates);
 CREATE INDEX idx_location_lon ON location(longitude);
 CREATE INDEX idx_location_lat ON location(latitude);
+CREATE INDEX idx_location_tz ON location(timezone_id);
 
 -- Indices: timezone
-CREATE index idx_tz_name ON timezone(name);
-CREATE index idx_tz_standard_name ON timezone(standard_time_name);
+CREATE INDEX idx_tz_name ON timezone(name);
+CREATE INDEX idx_tz_iso_code ON timezone(alpha_2_code);
 CREATE INDEX idx_tz_group_offset ON timezone(group_offset);
+CREATE INDEX idx_tz_standard_name ON timezone(standard_time_name);
 
 -- Indices: language
 CREATE INDEX idx_language_name ON language(name);
