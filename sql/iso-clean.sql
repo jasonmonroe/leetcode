@@ -73,7 +73,7 @@ CREATE TABLE currency (
 --  ISO 3166-1
 CREATE TABLE country (
     id INT UNSIGNED UNIQUE NOT NULL AUTO_INCREMENT,
-    short_name VARCHAR(64) UNIQUE NOT NULL,
+    name VARCHAR(64) UNIQUE NOT NULL,
     long_name VARCHAR(128) UNIQUE NOT NULL,
     local_name VARCHAR(64) UNIQUE,
     alpha_2_code CHAR(2) UNIQUE NOT NULL, -- iso code 2 chars
@@ -169,14 +169,14 @@ CREATE INDEX idx_language_alpha_2_code ON language(alpha_2_code);
 CREATE INDEX idx_language_alpha_3_code ON language(alpha_3_code);
 
 -- Indices: country
-CREATE INDEX idx_country_short_name ON country(short_name);
+CREATE INDEX idx_country_name ON country(name);
 CREATE INDEX idx_country_long_name ON country(long_name);
 CREATE INDEX idx_country_local_name ON country(local_name);
 CREATE INDEX idx_country_numeric_code ON country(numeric_code);
 CREATE INDEX idx_country_location ON country(location_id);
 CREATE INDEX idx_country_capital ON country(capital_id);
 CREATE INDEX idx_country_currency ON currency(id);
-CREATE INDEX idx_country_query ON country(short_name, location_id, alpha_2_code);
+CREATE INDEX idx_country_query ON country(name, location_id, alpha_2_code);
 CREATE SPATIAL INDEX idx_country_coordinates ON country(coordinates);
 CREATE INDEX idx_country_lon ON country(longitude);
 CREATE INDEX idx_country_lat ON country(latitude);
