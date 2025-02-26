@@ -26,7 +26,7 @@ CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 USE iso;
 
 CREATE TABLE location (
-    id INT UNSIGNED UNIQUE NOT NULL AUTO_INCREMENT,
+    id MEDIUMINT UNSIGNED UNIQUE NOT NULL AUTO_INCREMENT,
     coordinates POINT NOT NULL SRID 4326, -- used for Geographic Information System
     SPATIAL INDEX(coordinates),  -- Enables efficient spatial queries
     latitude DECIMAL(10wd, 8), -- used for Haversine Formula (North to South)
@@ -37,9 +37,9 @@ CREATE TABLE location (
 
 -- @link https://mkyong.com/java8/java-display-all-zoneid-and-its-utc-offset/
 CREATE TABLE timezone (
-    id INT UNSIGNED UNIQUE NOT NULL AUTO_INCREMENT,
+    id SMALLINT UNSIGNED UNIQUE NOT NULL AUTO_INCREMENT,
     standard_time_name VARCHAR(64) NOT NULL, -- i.e: Central Standard Time
-    name VARCHAR(32) NOT NULL, -- i.e: America/Chicago
+    name VARCHAR(32) UNIQUE NOT NULL, -- i.e: America/Chicago
     alpha_2_code CHAR(2),
     offset VARCHAR(16), -- i.e: UTC+12:00
     group_offset BOOLEAN DEFAULT FALSE, -- used to group timezones by offset to prevent displaying all timezones
@@ -50,7 +50,7 @@ CREATE TABLE timezone (
 
 -- ISO 639
 CREATE TABLE language (
-    id INT UNSIGNED UNIQUE NOT NULL AUTO_INCREMENT,
+    id SMALLINT UNSIGNED UNIQUE NOT NULL AUTO_INCREMENT,
     name VARCHAR(32) UNIQUE NOT NULL,
     local_name VARCHAR(32), -- name in local language
     alpha_2_code CHAR(2) UNIQUE NOT NULL, -- iso code 2 chars
@@ -62,7 +62,7 @@ CREATE TABLE language (
 -- ISO 4217
 -- @link https://www.iso.org/iso-4217-currency-codes.html
 CREATE TABLE currency (
-    id INT UNSIGNED UNIQUE NOT NULL AUTO_INCREMENT,
+    id SMALLINT UNSIGNED UNIQUE NOT NULL AUTO_INCREMENT,
     name VARCHAR(64) UNIQUE NOT NULL, -- i.e: United States Dollar
     iso_code VARCHAR(3) UNIQUE NOT NULL, -- i.e: USD
     symbol VARCHAR(4) NOT NULL, -- i.e: $
@@ -72,7 +72,7 @@ CREATE TABLE currency (
 
 --  ISO 3166-1
 CREATE TABLE country (
-    id INT UNSIGNED UNIQUE NOT NULL AUTO_INCREMENT,
+    id SMALLINT UNSIGNED UNIQUE NOT NULL AUTO_INCREMENT,
     name VARCHAR(64) UNIQUE NOT NULL,
     long_name VARCHAR(128) UNIQUE NOT NULL,
     local_name VARCHAR(64) UNIQUE,
@@ -100,11 +100,11 @@ CREATE TABLE country (
 
 -- ISO 33166-2
 CREATE TABLE region (
-    id INT UNSIGNED UNIQUE NOT NULL AUTO_INCREMENT,
-    country_id INT UNSIGNED NOT NULL,
-    location_id INT UNSIGNED,
-    language_id INT UNSIGNED,
-    name VARCHAR(64) NOT NULL,
+    id SMALLINT UNSIGNED UNIQUE NOT NULL AUTO_INCREMENT,
+    country_id SMALLINT UNSIGNED NOT NULL,
+    location_id MEDIUMINT UNSIGNED,
+    language_id SMALLINT UNSIGNED,
+    name VARCHAR(64) UNIQUE NOT NULL,
     iso_code VARCHAR(8) UNIQUE NOT NULL, -- 3166-2 iso sub-division code
     coordinates POINT NOT NULL SRID 4326, -- used for Geographic Information System
     SPATIAL INDEX(coordinates), -- enables efficient spatial queries
@@ -120,7 +120,7 @@ CREATE TABLE region (
 -- Metropolitan area
 -- Used to bundle cities of a suburban areas to a metropolitan area
 CREATE TABLE metro (
-    id INT UNSIGNED UNIQUE NOT NULL AUTO_INCREMENT,
+    id SMALLINT UNSIGNED UNIQUE NOT NULL AUTO_INCREMENT,
     city_id INT, -- used as a REFERENCES to the city proper of the metro (optional)
     name VARCHAR(64) UNIQUE NOT NULL,
     status BOOLEAN DEFAULT TRUE,
@@ -130,12 +130,12 @@ CREATE TABLE metro (
 -- cities
 -- @link https://raw.githubusercontent.com/dr5hn/countries-states-cities-database/refs/heads/master/sql/cities.sql
 CREATE TABLE city (
-    id INT UNSIGNED UNIQUE NOT NULL AUTO_INCREMENT,
-    region_id INT UNSIGNED NOT NULL,
-    metro_id INT UNSIGNED,
-    timezone_id INT UNSIGNED,
-    location_id INT UNSIGNED,
-    name VARCHAR(64) NOT NULL,
+    id MEDIUMINT UNSIGNED UNIQUE NOT NULL AUTO_INCREMENT,
+    region_id SMALLINT UNSIGNED NOT NULL,
+    metro_id SMALLINT UNSIGNED,
+    timezone_id SMALLINT UNSIGNED,
+    location_id MEDIUMINT UNSIGNED,
+    name VARCHAR(64) UNIQUE NOT NULL,
     coordinates POINT NOT NULL SRID 4326, -- used for Geographic Information System
     SPATIAL INDEX(coordinates),  -- Enables efficient spatial queries
     latitude DECIMAL(10, 8), -- used for Haversine Formula
