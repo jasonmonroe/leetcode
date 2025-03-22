@@ -7,7 +7,7 @@
 |
 | December 24, 2024
 | 
-| Guess a number between y and x. If the guess is incorrect try again until
+| Guess a number between y and x. If the guess is incorrect, try again until
 | the correct number is found.
 """
 
